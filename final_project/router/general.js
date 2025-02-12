@@ -45,11 +45,25 @@ public_users.get('/author/:author',function (req, res) {
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-  let title = req.params.title;
-  let book = books[title];
-  return res.status(300).json(book);
+public_users.get('/title/:title', function (req, res) {
+  let title = req.params.title.toLowerCase(); // Convert title to lowercase for case-insensitive search
+  let matchingBooks = [];
+
+  // Iterate over the books object
+  for (let key in books) {
+      if (books[key].title.toLowerCase() === title) {
+          matchingBooks.push(books[key]);
+      }
+  }
+
+  // Check if any books were found
+  if (matchingBooks.length > 0) {
+      return res.status(200).json(matchingBooks);
+  } else {
+      return res.status(404).json({ message: "No book found with this title" });
+  }
 });
+
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
@@ -100,7 +114,7 @@ public_users.get('/author/:author', async function (req, res) {
   }
 });
 
-// Get the author based on isbn using async await
+// Get the book based on isbn using async await
 public_users.get('/title/:title', async function (req, res) {
   const title = req.params.title; // Extract title from URL
 
